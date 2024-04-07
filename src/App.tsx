@@ -1,104 +1,46 @@
-import { useRef, useState } from 'react';
-import { IRefPhaserGame, PhaserGame } from './game/PhaserGame';
-import { MainMenu } from './game/scenes/MainMenu';
+import { initializeApp } from "firebase/app";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAYvEYcwXHATCmptKgXnKEbBF-BS7BFCss",
+  authDomain: "web-game-4d168.firebaseapp.com",
+  projectId: "web-game-4d168",
+  storageBucket: "web-game-4d168.appspot.com",
+  messagingSenderId: "927198535978",
+  appId: "1:927198535978:web:68e5da7f3f89a897c77e53"
+};
+initializeApp(firebaseConfig);
 
 function App()
 {
-    // The sprite can only be moved in the MainMenu Scene
-    const [canMoveSprite, setCanMoveSprite] = useState(true);
-
-    //  References to the PhaserGame component (game and scene are exposed)
-    const phaserRef = useRef<IRefPhaserGame | null>(null);
-    const [spritePosition, setSpritePosition] = useState({ x: 0, y: 0 });
-
-    const changeScene = () => {
-
-        if(phaserRef.current)
-        {     
-            const scene = phaserRef.current.scene as MainMenu;
+    const auth = getAuth()
+  
+    const signupForm = document.querySelector(".signup") as HTMLFormElement;
+    signupForm?.addEventListener("submit", (e) => {
+        e.preventDefault()
+        const email = signupForm.email.value
+        const password = signupForm.password.value
+        createUserWithEmailAndPassword(auth, email, password )
+        .then ((cred) => {
+            console.log("user created:",cred.user)
+            signupForm.reset()
             
-            if (scene)
-            {
-                scene.changeScene();
-            }
-        }
-    }
+        })
+        .catch ((err) => {
+            console.log(err.message)
+        })
 
-    const moveSprite = () => {
-
-        if(phaserRef.current)
-        {
-
-            const scene = phaserRef.current.scene as MainMenu;
-
-            if (scene && scene.scene.key === 'MainMenu')
-            {
-                // Get the update logo position
-                scene.moveLogo(({ x, y }) => {
-
-                    setSpritePosition({ x, y });
-
-                });
-            }
-        }
-
-    }
-
-    const addSprite = () => {
-
-        if (phaserRef.current)
-        {
-            const scene = phaserRef.current.scene;
-
-            if (scene)
-            {
-                // Add more stars
-                const x = Phaser.Math.Between(64, scene.scale.width - 64);
-                const y = Phaser.Math.Between(64, scene.scale.height - 64);
-    
-                //  `add.sprite` is a Phaser GameObjectFactory method and it returns a Sprite Game Object instance
-                const star = scene.add.sprite(x, y, 'star');
-    
-                //  ... which you can then act upon. Here we create a Phaser Tween to fade the star sprite in and out.
-                //  You could, of course, do this from within the Phaser Scene code, but this is just an example
-                //  showing that Phaser objects and systems can be acted upon from outside of Phaser itself.
-                scene.add.tween({
-                    targets: star,
-                    duration: 500 + Math.random() * 1000,
-                    alpha: 0,
-                    yoyo: true,
-                    repeat: -1
-                });
-            }
-        }
-    }
-
-    // Event emitted from the PhaserGame component
-    const currentScene = (scene: Phaser.Scene) => {
-
-        setCanMoveSprite(scene.scene.key !== 'MainMenu');
-        
-    }
+    }) 
 
     return (
         <div id="app">
-            <PhaserGame ref={phaserRef} currentActiveScene={currentScene} />
-            <div>
-                <div>
-                    <button className="button" onClick={changeScene}>Change Scene</button>
-                </div>
-                <div>
-                    <button disabled={canMoveSprite} className="button" onClick={moveSprite}>Toggle Movement</button>
-                </div>
-                <div className="spritePosition">Sprite Position:
-                    <pre>{`{\n  x: ${spritePosition.x}\n  y: ${spritePosition.y}\n}`}</pre>
-                </div>
-                <div>
-                    <button className="button" onClick={addSprite}>Add New Sprite</button>
-                </div>
-            </div>
+            <form className = "signup">
+                <input type = "email" name= "email" /> 
+                <input type= "password" name = "password" />
+                <button> sign up</button>
+            </form>
         </div>
-    )
+         )
 }
 
 export default App
