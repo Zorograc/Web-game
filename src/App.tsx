@@ -1,6 +1,10 @@
 import React from 'react';
 import { initializeApp } from "firebase/app";
 import Login from "./Pages/Login.tsx";
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import Game from "./Pages/Game.tsx";
+import ScoreBoard from "./Pages/ScoreBoard.tsx";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyAYvEYcwXHATCmptKgXnKEbBF-BS7BFCss",
@@ -13,13 +17,18 @@ const firebaseConfig = {
 
 initializeApp(firebaseConfig);
 
-const App: React.FC = () => {
+function App() {
   return (
-    <div>
-      <h1>Welcome to My App</h1>
-      <Login />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/game" element={<Game />} /> 
+        <Route path="/scoreboard" element={<ScoreBoard />} /> 
+      </Routes>
+    </Router>
   );
 }
+
 
 export default App;

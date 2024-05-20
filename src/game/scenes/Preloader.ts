@@ -9,39 +9,63 @@ export class Preloader extends Scene
 
     init ()
     {
-        //  We loaded this image in our Boot Scene, so we can display it here
+        // Display the background image
         this.add.image(512, 384, 'background');
 
-        //  A simple progress bar. This is the outline of the bar.
+        // Outline of the progress bar
         this.add.rectangle(512, 384, 468, 32).setStrokeStyle(1, 0xffffff);
 
-        //  This is the progress bar itself. It will increase in size from the left based on the % of progress.
+        // Progress bar itself
         const bar = this.add.rectangle(512-230, 384, 4, 28, 0xffffff);
 
-        //  Use the 'progress' event emitted by the LoaderPlugin to update the loading bar
+        // Update the progress bar based on loading progress
         this.load.on('progress', (progress: number) => {
-
-            //  Update the progress bar (our bar is 464px wide, so 100% = 464px)
-            bar.width = 4 + (460 * progress);
-
+            bar.width = 4 + (460 * progress * 10); // Corrected calculation
         });
     }
 
     preload ()
     {
-        //  Load the assets for the game - Replace with your own assets
-        this.load.setPath('assets');
-
-        this.load.image('logo', 'logo.png');
-        this.load.image('star', 'star.png');
+        
+        this.load.image("background", "/assets/background.jpg"); 
+        this.load.image("logo", "/assets/logo.jpg");
+        this.load.image("grassShort", "/assets/tilegrassshort.png");
+        this.load.image("grassLong", "/assets/tilegrasslong.png");
+        this.load.spritesheet("chicken", "/assets/chicken.png", {
+            frameHeight: 32,
+            frameWidth: 32
+        });
+        this.load.spritesheet("farmer", "/assets/farmer.png", {
+            frameHeight: 48,
+            frameWidth: 48
+        });
+        this.load.spritesheet("egg", "/assets/egg.png", {
+            frameHeight: 32,
+            frameWidth: 32
+        });
+        this.load.audio("menuaudio","/assets/menu_music.mp3");
     }
 
     create ()
     {
-        //  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.
-        //  For example, you can define global animations here, so we can use them in other scenes.
+       
+        this.add.image(512,384,"background").setOrigin(0, 0); 
+        this.add.image(512,384,"logo").setOrigin(0, 0); 
+        this.add.sprite(512,384,"chicken").setOrigin(0, 0); 
+        this.add.sprite(512,384,"farmer").setOrigin(0, 0); 
+        this.add.sprite(512,384,"egg").setOrigin(0, 0); 
+        this.add.image(512,384,"grassLong").setOrigin(0, 0);
+        this.add.image(512,384,"grassShort").setOrigin(0, 0);
 
-        //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
+
+        
+        const music = this.sound.get('menumusic');
+
+        if (music) {
+            music.play({ loop: true });
+        }
+
+       
         this.scene.start('MainMenu');
     }
 }
